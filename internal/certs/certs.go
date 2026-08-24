@@ -1,3 +1,6 @@
+// Copyright (C) 2026 Dennis Koch
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 // Package certs manages capstan's self-signed TLS identity.
 //
 // There is no CA in a homelab, so capstan is its own: it mints one self-signed

@@ -1,3 +1,6 @@
+// Copyright (C) 2026 Dennis Koch
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 // Package server assembles capstan: TLS in front, bearer auth, the allowlist,
 // and the verbatim proxy behind.
 //
@@ -13,10 +16,10 @@ import (
 	"net/http"
 	"time"
 
-	"git.kochlabs.io/dkoch/capstan/internal/allowlist"
-	"git.kochlabs.io/dkoch/capstan/internal/certs"
-	"git.kochlabs.io/dkoch/capstan/internal/config"
-	"git.kochlabs.io/dkoch/capstan/internal/proxy"
+	"github.com/denniskoch/capstan/internal/allowlist"
+	"github.com/denniskoch/capstan/internal/certs"
+	"github.com/denniskoch/capstan/internal/config"
+	"github.com/denniskoch/capstan/internal/proxy"
 )
 
 // NewHandler builds the request pipeline without any transport around it:

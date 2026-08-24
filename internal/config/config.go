@@ -1,3 +1,6 @@
+// Copyright (C) 2026 Dennis Koch
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 // Package config loads capstan's settings from the environment.
 //
 // Environment only, and every variable has a working default: capstan is

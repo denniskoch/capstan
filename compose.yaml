@@ -1,10 +1,10 @@
 # One capstan per Docker host. See README.md.
 services:
   capstan:
-    # Built locally from this directory; there is no registry yet.
-    #   docker compose up -d --build
-    build: .
-    image: capstan:local
+    # Published by CI to GHCR. :edge is the tip of main; pin a release like
+    # CAPSTAN_TAG=0.1.0 in .env for anything you care about.
+    # To build from source instead, see compose.build.yaml.
+    image: ghcr.io/denniskoch/capstan:${CAPSTAN_TAG:-edge}
     container_name: capstan
     restart: unless-stopped
 

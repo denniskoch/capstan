@@ -1,3 +1,6 @@
+// Copyright (C) 2026 Dennis Koch
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 // Package allowlist decides whether a Docker Engine API request may be
 // forwarded to the host's socket.
 //

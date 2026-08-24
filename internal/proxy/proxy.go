@@ -1,3 +1,6 @@
+// Copyright (C) 2026 Dennis Koch
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 // Package proxy forwards an approved request to the Docker socket and copies
 // the answer back unchanged.
 //

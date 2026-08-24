@@ -1,0 +1,14 @@
+# Build from source instead of pulling from GHCR:
+#
+#   docker compose -f compose.yaml -f compose.build.yaml up -d --build
+#
+# A separate file rather than a `build:` stanza in compose.yaml, because with
+# both an image and a build defined, whether `up` pulls or builds depends on
+# what happens to be in the local image cache — which is exactly the kind of
+# "worked on my machine" difference you do not want in the thing holding your
+# Docker socket.
+services:
+  capstan:
+    build: .
+    image: capstan:local
+    pull_policy: never

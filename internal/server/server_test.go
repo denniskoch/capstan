@@ -1,3 +1,6 @@
+// Copyright (C) 2026 Dennis Koch
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 package server
 
 import (
@@ -13,7 +16,7 @@ import (
 	"testing"
 	"time"
 
-	"git.kochlabs.io/dkoch/capstan/internal/config"
+	"github.com/denniskoch/capstan/internal/config"
 )
 
 const testToken = "s3cr3t"

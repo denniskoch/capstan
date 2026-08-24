@@ -1,3 +1,6 @@
+// Copyright (C) 2026 Dennis Koch
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 // Command capstan is an authenticating TLS front door for a Docker host's
 // /var/run/docker.sock.
 //
@@ -19,9 +22,9 @@ import (
 	"syscall"
 	"time"
 
-	"git.kochlabs.io/dkoch/capstan/internal/certs"
-	"git.kochlabs.io/dkoch/capstan/internal/config"
-	"git.kochlabs.io/dkoch/capstan/internal/server"
+	"github.com/denniskoch/capstan/internal/certs"
+	"github.com/denniskoch/capstan/internal/config"
+	"github.com/denniskoch/capstan/internal/server"
 )
 
 func main() {

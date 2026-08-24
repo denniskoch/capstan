@@ -1,5 +1,9 @@
 # capstan
 
+[![ci](https://github.com/denniskoch/capstan/actions/workflows/ci.yml/badge.svg)](https://github.com/denniskoch/capstan/actions/workflows/ci.yml)
+[![image](https://github.com/denniskoch/capstan/actions/workflows/image.yml/badge.svg)](https://github.com/denniskoch/capstan/actions/workflows/image.yml)
+[![license: AGPL v3](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
+
 An authenticating TLS front door for a Docker host's `/var/run/docker.sock`.
 
 capstan runs as a container on each Docker host and lets a remote console drive
@@ -22,13 +26,31 @@ token, and an allowlist of what may be forwarded.
 
 ```bash
 cp .env.example .env      # set DOCKER_GID and CAPSTAN_TOKEN
-docker compose up -d --build
+docker compose up -d
 docker compose logs | grep -A3 'pin this value'
 ```
 
-There is no registry yet: compose builds the image from this directory and tags
-it `capstan:local`. Copy the repo to each host and `up --build` there, or build
-once and `docker save | docker load` it across.
+Images are published to GHCR for `linux/amd64` and `linux/arm64`:
+
+```
+ghcr.io/denniskoch/capstan:edge      tip of main, rebuilt on every push
+ghcr.io/denniskoch/capstan:latest    newest release
+ghcr.io/denniskoch/capstan:0.1.0     an exact release
+ghcr.io/denniskoch/capstan:0.1       newest patch of that minor
+```
+
+`compose.yaml` defaults to `:edge`. Pin a release in `.env` for anything you
+care about:
+
+```
+CAPSTAN_TAG=0.1.0
+```
+
+To build from source instead of pulling:
+
+```bash
+docker compose -f compose.yaml -f compose.build.yaml up -d --build
+```
 
 `DOCKER_GID` is the docker socket's group **on the host that will run capstan**:
 
@@ -50,8 +72,7 @@ without re-exporting anything.
 # compose.yaml — one per Docker host
 services:
   capstan:
-    build: .                  # no registry yet; built on each host
-    image: capstan:local
+    image: ghcr.io/denniskoch/capstan:${CAPSTAN_TAG:-edge}
     container_name: capstan
     restart: unless-stopped
 
@@ -281,6 +302,25 @@ go test ./...          # no Docker required; the server tests use a fake socket
 go build ./cmd/capstan
 docker build -t capstan:local .
 ```
+
+CI runs `gofmt`, `go vet` and `go test -race` on every push and pull request.
+Pushes to `main` publish `:edge`; a `vX.Y.Z` tag publishes the semver tags and
+moves `:latest`.
+
+## License
+
+AGPL-3.0-or-later. See [LICENSE](LICENSE).
+
+capstan is a network service, so section 13 is the operative clause: if you
+modify it and let others interact with it over a network, they are entitled to
+the source of your modified version. Running an unmodified copy on your own
+hosts carries no obligation.
+
+Note that capstan does not advertise a source link in its responses, which is
+the usual way a network service discharges that offer. Injecting a header into
+proxied replies would be a divergence from the Docker Engine API, and this
+codebase treats such divergences as bugs. If you deploy a modified capstan for
+others to use, make the offer out of band.
 
 Running it against a socket directly:
 

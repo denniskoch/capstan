@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+          # capstan has no dependencies outside the standard library, so there
+          # is no module cache worth restoring.
+          cache: false
+
+      - name: gofmt
+        run: |
+          unformatted=$(gofmt -l cmd internal)
+          if [ -n "$unformatted" ]; then
+            echo "::error::gofmt needed on:"; echo "$unformatted"
+            exit 1
+          fi
+
+      - name: vet
+        run: go vet ./...
+
+      # The allowlist is the security model, so the race detector runs over it
+      # rather than only over the happy path.
+      - name: test
+        run: go test -race -count=1 ./...
+
+      - name: build
+        run: go build ./...
