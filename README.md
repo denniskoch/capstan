@@ -22,8 +22,25 @@ token, and an allowlist of what may be forwarded.
 
 ```bash
 cp .env.example .env      # set DOCKER_GID and CAPSTAN_TOKEN
-docker compose up -d
+docker compose up -d --build
 docker compose logs | grep -A3 'pin this value'
+```
+
+There is no registry yet: compose builds the image from this directory and tags
+it `capstan:local`. Copy the repo to each host and `up --build` there, or build
+once and `docker save | docker load` it across.
+
+`DOCKER_GID` is the docker socket's group **on the host that will run capstan**:
+
+```bash
+stat -c '%g' /var/run/docker.sock
+```
+
+If Docker itself runs in a VM (colima, Docker Desktop), read it from inside:
+
+```bash
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+  alpine stat -c '%g' /var/run/docker.sock
 ```
 
 Compose reads `.env` for every subcommand, so `logs` and `ps` keep working
@@ -33,7 +50,8 @@ without re-exporting anything.
 # compose.yaml — one per Docker host
 services:
   capstan:
-    image: capstan:dev
+    build: .                  # no registry yet; built on each host
+    image: capstan:local
     container_name: capstan
     restart: unless-stopped
 
@@ -261,7 +279,7 @@ per host, no multi-host awareness.
 ```bash
 go test ./...          # no Docker required; the server tests use a fake socket
 go build ./cmd/capstan
-docker build -t capstan:dev .
+docker build -t capstan:local .
 ```
 
 Running it against a socket directly:

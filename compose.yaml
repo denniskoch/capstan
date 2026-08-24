@@ -1,7 +1,10 @@
 # One capstan per Docker host. See README.md.
 services:
   capstan:
-    image: capstan:dev
+    # Built locally from this directory; there is no registry yet.
+    #   docker compose up -d --build
+    build: .
+    image: capstan:local
     container_name: capstan
     restart: unless-stopped
 
