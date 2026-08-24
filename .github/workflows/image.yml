@@ -47,6 +47,13 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}},enable=${{ !startsWith(github.ref, 'refs/tags/v0.') }}
 
+            # `latest` means "newest release", never "newest commit", and never
+            # a prerelease. Declared here rather than as a second push so that
+            # latest and the semver tags resolve to the *same* manifest digest
+            # — a separate build would be byte-identical but not provably the
+            # same artifact.
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-') }}
+
             # Immutable handle for a specific build, for pinning a rollback.
             type=sha,format=long
           labels: |
@@ -64,17 +71,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      # `latest` should mean "newest release", never "newest commit". The
-      # metadata action's default latest rule would also fire on a prerelease
-      # tag, so it is set explicitly here instead.
-      - name: tag latest on a release
-        if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
