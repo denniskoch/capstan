@@ -1,0 +1,30 @@
+# One capstan per Docker host. See README.md.
+services:
+  capstan:
+    image: capstan:dev
+    container_name: capstan
+    restart: unless-stopped
+
+    # Non-root. The gid must be the docker socket's group on THIS host:
+    #   stat -c '%g' /var/run/docker.sock
+    user: "65532:${DOCKER_GID:?run: DOCKER_GID=$(stat -c '%g' /var/run/docker.sock)}"
+
+    environment:
+      CAPSTAN_TOKEN: "${CAPSTAN_TOKEN:?set CAPSTAN_TOKEN in .env}"
+      CAPSTAN_TLS_SANS: "${CAPSTAN_TLS_SANS:-}"
+      # Read-only unless you say otherwise. See the allowlist in the README.
+      CAPSTAN_ALLOW_WRITE: "${CAPSTAN_ALLOW_WRITE:-false}"
+
+    ports:
+      - "9443:9443"
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - capstan-data:/data
+
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+
+volumes:
+  capstan-data:
